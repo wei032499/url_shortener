@@ -1,0 +1,101 @@
+openapi: 3.0.0
+servers:
+  - url: 'https://shachikuengineer.tk/urlshorten'
+    description: ''
+    variables: {}
+info:
+  version: 1.0.0
+  title: URL Shortener
+  description: |-
+    # Introduction
+    URL Shortener API
+paths:
+  /api/v1/urls:
+    post:
+      summary: Upload URL API
+      description: 上傳原始網址 並 取得縮短網址
+      operationId: uploadURL
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: original URL
+                  example: 'https://dcard.tw/'
+                expireAt:
+                  type: string
+                  description: expire time (UTC)
+                  example: '2022-12-31T23:59:59Z'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    description: original URL
+                    example: 'https://dcard.tw/'
+                  expireAt:
+                    type: string
+                    description: expire time (UTC)
+                    example: '2022-12-31T23:59:59Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bad Request
+        '415':
+          description: Unsupported Media Type
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unsupported Media Type
+      tags:
+        - URL
+  '/api/v1/{url_id}':
+    get:
+      summary: Redirect URL API
+      description: 從短網址重新導回原始網址
+      operationId: redirectURL
+      parameters:
+        - in: path
+          name: url_id
+          schema:
+            type: string
+          example: test
+          required: true
+          description: 短網址ID
+      responses:
+        '301':
+          description: 'Success: Redirect to original URL'
+        '404':
+          description: Link not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 連結不存在或已過期
+      tags:
+        - URL
+security: []
+tags: []
