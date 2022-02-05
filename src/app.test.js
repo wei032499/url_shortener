@@ -35,7 +35,7 @@ describe("/urls endpoint", () => {
         response = await request
             .post("/api/" + test_version + "/urls")
             .set('Content-type', 'application/json')
-            .send({ "url": "http://localhost:3000/api/v1/test" });
+            .send({ "url": "https://www.dcard.tw" });
 
         expect(response.status).toBe(400);
 
@@ -43,19 +43,35 @@ describe("/urls endpoint", () => {
         response = await request
             .post("/api/" + test_version + "/urls")
             .set('Content-type', 'application/json')
-            .send({ "url": "http://localhost:3000/api/v1/test", "expireAt": "1999-03-24T09:20:41Z" });
+            .send({ "url": "https://www.dcard.tw", "expireAt": "1999-03-24T09:20:41Z" });
 
         expect(response.status).toBe(400);
+    })
+
+
+    it("success", async () => {
+
+        /**
+         * Unsupported Media Type
+         */
+        var response = await request
+            .post("/api/" + test_version + "/urls")
+            .set('Content-type', 'application/json')
+            .send({ "url": "https://www.dcard.tw", "expireAt": "2022-12-31T23:59:59Z" });
+
+        expect(response.status).toBe(200);
+        console.log(response.text);
         // expect(response.text).toBe("Hello world");
+
     })
 });
 
 
 // GET request
-/*describe("/:url_id endpoint", () => {
-    it("should return a response", async () => {
-        const response = await request.get("/api/" + test_version + "/test")
-        expect(response.status).toBe(200)
-        expect(response.text).toBe("Hello world");
+describe("/:url_id endpoint", () => {
+    it("sucess", async () => {
+        const response = await request.get("/api/" + test_version + "/test");
+        expect(response.status).toBe(301);
+
     })
-});*/
+});

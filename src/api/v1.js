@@ -62,11 +62,6 @@ router.post('/urls', function (req, res) {
 
 router.get("/:url_id", (req, res) => {
 
-    if (!req.is('application/json')) {
-        res.status(415).send("Unsupported Media Type");
-        return;
-    }
-
     /**
      * 以短網址id查詢資料表(hash)，重新導向至原始連結
      */
@@ -76,7 +71,7 @@ router.get("/:url_id", (req, res) => {
         .then((rows) => {
             if (rows.length === 0) throw { status: 404, message: "連結不存在或已過期" };
 
-            res.redirect(rows[0].url);
+            res.redirect(301, rows[0].url);
 
         })
         .catch((err) => {
