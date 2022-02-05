@@ -17,9 +17,9 @@ API Documentation：https://wei032499.github.io/url_shortener/
 
 `valid-url`：檢查URL格式是否正確，用在檢查 Upload URL API 的request body。
 
-`jest`：`query_acc.php`、`query_score.php`、`query_pwd.php`、`query_signup.php`、`letter.php`。(相關內頁於`./query/`)Testing Framework。
+`jest`：Testing Framework。
 
-`supertest：`enroll_list.php`、`enroll_queue.php`。(相關內頁於`./enroll/`)`：testing HTTP server。
+`supertest`：testing HTTP server。
 
 
 ## Routes
