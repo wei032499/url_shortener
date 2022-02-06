@@ -45,9 +45,9 @@ router.post('/urls', function (req, res) {
 
 
     database.query('INSERT INTO hash (id, url, expireAt) VALUES (?, ?, STR_TO_DATE(?, "%Y-%m-%dT%H:%i:%sZ"))', [url_id, req.body.url, req.body.expireAt])
+        .then(() => cache.connect())
+        .then(() => cache.select(0))
         .then(() => {
-            cache.connect();
-            cache.select(0);
             return cache.set(url_id, req.body.url, {
                 PX: new Date(req.body.expireAt) - new Date()
             });
@@ -87,10 +87,8 @@ router.get("/:url_id", (req, res) => {
     // cache.on('error', (err) => console.log('Redis Client Error', err));
 
     cache.connect()
-        .then(() => {
-            cache.select(0);
-            return cache.get(req.params.url_id);
-        })
+        .then(() => cache.select(0))
+        .then(() => { return cache.get(req.params.url_id); })
         .then((value) => {
 
             /**
