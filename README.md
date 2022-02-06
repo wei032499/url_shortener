@@ -3,6 +3,12 @@
 
 API Documentation：https://wei032499.github.io/url_shortener/
 
+API Server：https://shachikuengineer.tk/urlshorten
+
+=> `/api/v1/:url_id`：短網址重新導向回原始網址
+
+=> `/api/v1/urls`：Post上傳原始網址以取得短網址
+
 ## 概述(Overview)
 1. Implement with `Node.js`, `MySQL`.
 2. URL shortener has 2 APIs, please follow API example to implement:
@@ -19,7 +25,9 @@ API Documentation：https://wei032499.github.io/url_shortener/
 
 `jest`：Testing Framework。
 
-`supertest`：testing HTTP server。
+`supertest`：Testing HTTP server。
+
+`redis`：Cache storage。將部分key-value對應儲存在memory，減少存取資料庫的次數以提升效能(資料庫存取效能較差)，並在記憶體空間滿量時使用Least Recently Used機制淘汰存在memory的舊資料。`(key, value) => (url_id, original_url)`
 
 
 ## Routes
