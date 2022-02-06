@@ -4,6 +4,8 @@ const router = express.Router();
 const Database = require('../database');
 const checkerr = require('../checkerr');
 
+const redis = require('redis');
+
 const validUrl = require('valid-url');
 const randomstring = require("randomstring");
 
@@ -37,7 +39,23 @@ router.post('/urls', function (req, res) {
      */
     const url_id = randomstring.generate(8);
     const database = new Database();
+
+    const cache = redis.createClient();
+    cache.on('error', (err) => console.log('Redis Client Error', err));
+
+
     database.query('INSERT INTO hash (id, url, expireAt) VALUES (?, ?, STR_TO_DATE(?, "%Y-%m-%dT%H:%i:%sZ"))', [url_id, req.body.url, req.body.expireAt])
+        .then(() => {
+            return cache.connect();
+        })
+        .then(() => {
+            return cache.select(0);
+        })
+        .then(() => {
+            return cache.set(url_id, JSON.stringify(req.body), {
+                PX: new Date(req.body.expireAt) - new Date()
+            });
+        })
         .then(() => {
             const splits = req.originalUrl.split('/');
             splits.pop();
@@ -54,7 +72,8 @@ router.post('/urls', function (req, res) {
             res.status(errMSg.status).send({ message: errMSg.message });
         })
         .finally(() => {
-            database.close();
+            cache.quit().catch((e) => { });
+            database.close().catch((e) => { });
         });
 
 
@@ -66,12 +85,38 @@ router.get("/:url_id", (req, res) => {
      * 以短網址id查詢資料表(hash)，重新導向至原始連結
      */
 
-    const database = new Database();
-    database.query('SELECT * FROM hash WHERE id = ? AND expireAt > UTC_TIMESTAMP()', [req.params.url_id])
+    let database = null;
+
+    const cache = redis.createClient();
+    cache.on('error', (err) => console.log('Redis Client Error', err));
+
+    cache.connect()
+        .then(() => {
+            return cache.select(0);
+        })
+        .then(() => {
+            return cache.get(req.params.url_id);
+        })
+        .then((value) => {
+            if (value == null) {
+                database = new Database();
+                return database.query('SELECT * FROM hash WHERE id = ? AND expireAt > UTC_TIMESTAMP()', [req.params.url_id]);
+
+            }
+            console.log("cached!", value);
+            const data = JSON.parse(value);
+            return [data];
+        })
         .then((rows) => {
             if (rows.length === 0) throw { status: 404, message: "連結不存在或已過期" };
 
             res.redirect(301, rows[0].url);
+
+            const url_id = rows[0].id;
+            delete rows[0].id;
+            cache.set(url_id, JSON.stringify(rows[0]), {
+                PX: new Date(rows[0].expireAt) - new Date()
+            });
 
         })
         .catch((err) => {
@@ -80,9 +125,10 @@ router.get("/:url_id", (req, res) => {
             res.status(errMSg.status).send({ message: errMSg.message });
         })
         .finally(() => {
-            database.close().catch((e) => { });
+            cache.quit().catch((e) => { });
+            if (database !== null)
+                database.close().catch((e) => { });
         });
-
 
 });
 

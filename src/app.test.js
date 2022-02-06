@@ -4,6 +4,7 @@ const request = supertest(app);
 
 const test_version = "v1";
 
+// curl -X POST -H "Content-Type:application/json" http://localhost:3000/api/v1/urls -d '{"url": "https://dcard.tw/", "expireAt": "2022-12-31T23:59:59Z"}'
 // POST request
 describe("/urls endpoint", () => {
     it("bad request", async () => {

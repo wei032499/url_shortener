@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node src",
+    "start": "supervisor node src",
     "test": "jest src/app.test.js"
   },
   "author": "",
@@ -12,6 +12,7 @@
   "dependencies": {
     "express": "^4.17.2",
     "randomstring": "^1.2.2",
+    "redis": "^4.0.3",
     "valid-url": "^1.0.9"
   },
   "devDependencies": {
