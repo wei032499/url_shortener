@@ -58,7 +58,7 @@ describe("/urls endpoint", () => {
         var response = await request
             .post("/api/" + test_version + "/urls")
             .set('Content-type', 'application/json')
-            .send({ "url": "https://www.dcard.tw", "expireAt": "2022-12-31T23:59:59Z" });
+            .send({ "url": "https://www.dcard.tw", "expireAt": "2032-12-31T23:59:59Z" });
 
         expect(response.status).toBe(200);
         console.log(response.text);
@@ -71,8 +71,14 @@ describe("/urls endpoint", () => {
 // GET request
 describe("/:url_id endpoint", () => {
     it("sucess", async () => {
-        const response = await request.get("/api/" + test_version + "/test");
+        const response = await request.get("/api/" + test_version + "/kEvMR");
         expect(response.status).toBe(301);
+
+    })
+
+    it("not found", async () => {
+        const response = await request.get("/api/" + test_version + "/notfound");
+        expect(response.status).toBe(404);
 
     })
 });

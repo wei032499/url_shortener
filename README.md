@@ -19,7 +19,7 @@ API Server：https://shachikuengineer.tk/urlshorten
 ## 使用套件
 `express`：Web framework of Node.js。
 
-`randomstring`：產生隨機字串，用以產生短網址ID。
+`hashids`：將資料庫的AUTO_INCREMENT ID轉換為可正逆向hash的短網址ID。
 
 `valid-url`：檢查URL格式是否正確，用在檢查 Upload URL API 的request body。
 

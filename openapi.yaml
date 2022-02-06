@@ -44,11 +44,11 @@ paths:
                   id:
                     type: string
                     description: 短網址ID
-                    example: "iSWVRmIG"
+                    example: "kEvMR"
                   shortUrl:
                     type: string
                     description: 短網址URL
-                    example: "https://shachikuengineer.tk/urlshorten/api/v1/iSWVRmIG"
+                    example: "https://shachikuengineer.tk/urlshorten/api/v1/kEvMR"
         "400":
           description: Bad Request
           content:
@@ -82,7 +82,7 @@ paths:
           name: url_id
           schema:
             type: string
-          example: "iSWVRmIG"
+          example: "kEvMR"
           required: true
           description: 短網址ID
       responses:

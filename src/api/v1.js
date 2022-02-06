@@ -7,7 +7,8 @@ const checkerr = require('../checkerr');
 const redis = require('redis');
 
 const validUrl = require('valid-url');
-const randomstring = require("randomstring");
+const Hashids = require('hashids/cjs');
+const hashids = new Hashids("&4;!F\#es4dtJ$W4");
 
 router.post('/urls', function (req, res) {
 
@@ -37,14 +38,15 @@ router.post('/urls', function (req, res) {
      *      expireAt => DATETIME
      *      
      */
-    const url_id = randomstring.generate(8);
+    let url_id = null;
     const database = new Database();
 
     const cache = redis.createClient();
     // cache.on('error', (err) => console.log('Redis Client Error', err));
 
 
-    database.query('INSERT INTO hash (id, url, expireAt) VALUES (?, ?, STR_TO_DATE(?, "%Y-%m-%dT%H:%i:%sZ"))', [url_id, req.body.url, req.body.expireAt])
+    database.query('INSERT INTO hash (url, expireAt) VALUES (?, STR_TO_DATE(?, "%Y-%m-%dT%H:%i:%sZ"))', [req.body.url, req.body.expireAt])
+        .then((result) => url_id = hashids.encode(result.insertId))
         .then(() => cache.connect())
         .then(() => cache.select(0))
         .then(() => {
@@ -96,7 +98,7 @@ router.get("/:url_id", (req, res) => {
              */
             if (value == null) {
                 database = new Database();
-                return database.query('SELECT * FROM hash WHERE id = ? AND expireAt > UTC_TIMESTAMP()', [req.params.url_id]);
+                return database.query('SELECT * FROM hash WHERE id = ? AND expireAt > UTC_TIMESTAMP()', [hashids.decode(req.params.url_id)]);
 
             }
 
@@ -116,7 +118,7 @@ router.get("/:url_id", (req, res) => {
              * 資料從資料庫撈出，意即不在cache則寫入cache
              */
             if (!isNaN(new Date(rows[0].expireAt))) {
-                const url_id = rows[0].id;
+                const url_id = hashids.encode(rows[0].id);
                 cache.set(url_id, rows[0].url, {
                     PX: new Date(rows[0].expireAt) - new Date()
                 });
