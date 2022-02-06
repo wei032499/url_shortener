@@ -41,18 +41,14 @@ router.post('/urls', function (req, res) {
     const database = new Database();
 
     const cache = redis.createClient();
-    cache.on('error', (err) => console.log('Redis Client Error', err));
+    // cache.on('error', (err) => console.log('Redis Client Error', err));
 
 
     database.query('INSERT INTO hash (id, url, expireAt) VALUES (?, ?, STR_TO_DATE(?, "%Y-%m-%dT%H:%i:%sZ"))', [url_id, req.body.url, req.body.expireAt])
         .then(() => {
-            return cache.connect();
-        })
-        .then(() => {
-            return cache.select(0);
-        })
-        .then(() => {
-            return cache.set(url_id, JSON.stringify(req.body), {
+            cache.connect();
+            cache.select(0);
+            return cache.set(url_id, req.body.url, {
                 PX: new Date(req.body.expireAt) - new Date()
             });
         })
@@ -88,23 +84,29 @@ router.get("/:url_id", (req, res) => {
     let database = null;
 
     const cache = redis.createClient();
-    cache.on('error', (err) => console.log('Redis Client Error', err));
+    // cache.on('error', (err) => console.log('Redis Client Error', err));
 
     cache.connect()
         .then(() => {
-            return cache.select(0);
-        })
-        .then(() => {
+            cache.select(0);
             return cache.get(req.params.url_id);
         })
         .then((value) => {
+
+            /**
+             * cache中找不到對應的key，則從資料庫獲取資料
+             */
             if (value == null) {
                 database = new Database();
                 return database.query('SELECT * FROM hash WHERE id = ? AND expireAt > UTC_TIMESTAMP()', [req.params.url_id]);
 
             }
-            console.log("cached!", value);
-            const data = JSON.parse(value);
+
+            /**
+             * 已從cache中獲取資料。 url_id => url
+             */
+            // console.log("cached!", value);
+            const data = { url: value };
             return [data];
         })
         .then((rows) => {
@@ -112,11 +114,15 @@ router.get("/:url_id", (req, res) => {
 
             res.redirect(301, rows[0].url);
 
-            const url_id = rows[0].id;
-            delete rows[0].id;
-            cache.set(url_id, JSON.stringify(rows[0]), {
-                PX: new Date(rows[0].expireAt) - new Date()
-            });
+            /**
+             * 資料從資料庫撈出，意即不在cache則寫入cache
+             */
+            if (!isNaN(new Date(rows[0].expireAt))) {
+                const url_id = rows[0].id;
+                cache.set(url_id, rows[0].url, {
+                    PX: new Date(rows[0].expireAt) - new Date()
+                });
+            }
 
         })
         .catch((err) => {
