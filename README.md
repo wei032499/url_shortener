@@ -48,6 +48,6 @@ API Server：https://shachikuengineer.tk/urlshorten
 
 ## 資料欄說明(資料庫)
 #### hash：
-    id => VARCHAR(8)，短網址ID
+    id => INT AUTO_INCREMENT，短網址ID (hash前)
     url => TEXT，原始URL
     expireAt => DATETIME，短網址到期時間

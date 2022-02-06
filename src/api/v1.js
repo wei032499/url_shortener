@@ -33,7 +33,7 @@ router.post('/urls', function (req, res) {
      * Database Table:
      *      table name => hash
      *      
-     *      id => VARCHAR(8)
+     *      id => INT AUTO_INCREMENT
      *      url => TEXT
      *      expireAt => DATETIME
      *      
