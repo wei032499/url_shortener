@@ -32,7 +32,7 @@ paths:
                 expireAt:
                   type: string
                   description: expire time (UTC)
-                  example: "2022-12-31T23:59:59Z"
+                  example: "2032-12-31T23:59:59Z"
       responses:
         "200":
           description: Success
@@ -41,14 +41,14 @@ paths:
               schema:
                 type: object
                 properties:
-                  url:
+                  id:
                     type: string
-                    description: original URL
-                    example: "https://dcard.tw/"
-                  expireAt:
+                    description: 短網址ID
+                    example: "iSWVRmIG"
+                  shortUrl:
                     type: string
-                    description: expire time (UTC)
-                    example: "2022-12-31T23:59:59Z"
+                    description: 短網址URL
+                    example: "https://shachikuengineer.tk/urlshorten/api/v1/iSWVRmIG"
         "400":
           description: Bad Request
           content:
@@ -82,7 +82,7 @@ paths:
           name: url_id
           schema:
             type: string
-          example: "test"
+          example: "iSWVRmIG"
           required: true
           description: 短網址ID
       responses:
