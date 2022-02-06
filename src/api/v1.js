@@ -98,7 +98,11 @@ router.get("/:url_id", (req, res) => {
              */
             if (value == null) {
                 database = new Database();
-                return database.query('SELECT * FROM hash WHERE id = ? AND expireAt > UTC_TIMESTAMP()', [hashids.decode(req.params.url_id)]);
+
+                const id = hashids.decode(req.params.url_id);
+                if (id.length !== 1) throw { status: 404, message: "連結不存在或已過期" };
+
+                return database.query('SELECT * FROM hash WHERE id = ? AND expireAt > UTC_TIMESTAMP()', [id]);
 
             }
 

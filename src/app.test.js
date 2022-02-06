@@ -61,7 +61,6 @@ describe("/urls endpoint", () => {
             .send({ "url": "https://www.dcard.tw", "expireAt": "2032-12-31T23:59:59Z" });
 
         expect(response.status).toBe(200);
-        console.log(response.text);
         // expect(response.text).toBe("Hello world");
 
     })
