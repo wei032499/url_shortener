@@ -1,6 +1,6 @@
 openapi: 3.0.0
 servers:
-  - url: 'https://shachikuengineer.tk/urlshorten'
+  - url: 'https://weisite.ml/urlshorten'
     description: ''
     variables: {}
 info:
@@ -46,7 +46,7 @@ paths:
                   shortUrl:
                     type: string
                     description: 短網址URL
-                    example: 'https://shachikuengineer.tk/urlshorten/api/v1/kEvMR'
+                    example: 'https://weisite.ml/urlshorten/api/v1/kEvMR'
         '400':
           description: Bad Request
           content:
