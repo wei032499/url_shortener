@@ -3,7 +3,7 @@
 
 API Documentation：https://wei032499.github.io/url_shortener/
 
-API Server：https://shachikuengineer.tk/urlshorten
+API Server：https://weisite.ml/urlshorten
 
 => `/api/v1/:url_id`：短網址重新導向回原始網址
 
